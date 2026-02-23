@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, DecimalField, Sum, F,ExpressionWrapper
 from .models import Product, Category, Sale
@@ -14,6 +14,109 @@ def register(request):
         form.save()
         return redirect('login')
     return render(request, 'register.html', {'form': form})
+
+def category_list(request):
+    categories = Category.objects.all()
+    return render(request, 'category_list.html', {'categories': categories})
+
+def product_list(request):
+    products = Product.objects.select_related('category').all()
+    return render(request, 'product_list.html', {'products': products})
+
+def sale_list(request):
+    sales = Sale.objects.select_related('product').all()
+
+    for sale in sales:
+        sale.total_price = sale.quantity_sold * sale.product.price
+
+    return render(request, 'sale_list.html', {'sales': sales})
+
+def add_sale(request):
+    if request.method == 'POST':
+        form = SaleForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('sale_list')
+    else:
+        form = SaleForm()
+    return render(request, 'sale_form.html', {'form': form, 'title': 'Record Sale'})
+
+def edit_sale(request, pk):
+    sale = get_object_or_404(Sale, pk=pk)
+    if request.method == 'POST':
+        form = SaleForm(request.POST, instance=sale)
+        if form.is_valid():
+            form.save()
+            return redirect('sale_list')
+    else:
+        form = SaleForm(instance=sale)
+    return render(request, 'sale_form.html', {'form': form, 'title': 'Edit Sale'})
+
+def delete_sale(request, pk):
+    sale = get_object_or_404(Sale, pk=pk)
+    if request.method == 'POST':
+        sale.delete()
+        return redirect('sale_list')
+    return render(request, 'sale_confirm_delete.html', {'sale': sale})
+
+def add_category(request):
+    if request.method == 'POST':
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('category_list')
+    else:
+        form = CategoryForm()
+    return render(request, 'category_form.html', {'form': form, 'title': 'Add Category'})
+
+
+def edit_category(request, pk):
+    category = get_object_or_404(Category, pk=pk)
+    if request.method == 'POST':
+        form = CategoryForm(request.POST, instance=category)
+        if form.is_valid():
+            form.save()
+            return redirect('category_list')
+    else:
+        form = CategoryForm(instance=category)
+    return render(request, 'category_form.html', {'form': form, 'title': 'Edit Category'})
+
+
+def add_product(request):
+    if request.method == 'POST':
+        form = ProductForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('product_list')
+    else:
+        form = ProductForm()
+    return render(request, 'product_form.html', {'form': form, 'title': 'Add Product'})
+
+def edit_product(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    if request.method == 'POST':
+        form = ProductForm(request.POST, instance=product)
+        if form.is_valid():
+            form.save()
+            return redirect('product_list')
+    else:
+        form = ProductForm(instance=product)
+    return render(request, 'product_form.html', {'form': form, 'title': 'Edit Product'})
+
+def delete_product(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    if request.method == 'POST':
+        product.delete()
+        return redirect('product_list')
+    return render(request, 'product_confirm_delete.html', {'product': product})
+
+
+def delete_category(request, pk):
+    category = get_object_or_404(Category, pk=pk)
+    if request.method == 'POST':
+        category.delete()
+        return redirect('category_list')
+    return render(request, 'category_confirm_delete.html', {'category': category})
 
 
 @login_required

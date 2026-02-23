@@ -1,118 +1,115 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<!-- ===================== -->
-<!-- TOP SUMMARY CARDS -->
-<!-- ===================== -->
-<div class="row text-center">
+<div class="container-fluid px-0 px-md-2 px-lg-4">
 
-    <div class="col-md-3">
-        <div class="card bg-primary text-white mb-3">
-            <div class="card-body">
-                <h6>Total Products</h6>
-                <h3>{{ total_products }}</h3>
+    <!-- ===================== -->
+    <!-- TOP SUMMARY CARDS -->
+    <!-- ===================== -->
+    <div class="row text-center g-3 g-md-4 mt-3 mt-md-4">
+        <div class="col-6 col-md-3">
+            <div class="card bg-primary text-white shadow h-100">
+                <div class="card-body d-flex flex-column justify-content-center py-4 py-md-5">
+                    <h6 class="mb-1">Total Products</h6>
+                    <h3 class="mb-0">{{ total_products }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card bg-success text-white shadow h-100">
+                <div class="card-body d-flex flex-column justify-content-center py-4 py-md-5">
+                    <h6 class="mb-1">Total Categories</h6>
+                    <h3 class="mb-0">{{ total_categories }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card bg-warning text-dark shadow h-100">
+                <div class="card-body d-flex flex-column justify-content-center py-4 py-md-5">
+                    <h6 class="mb-1">Total Sales Qty</h6>
+                    <h3 class="mb-0">{{ total_sales }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card bg-info text-white shadow h-100">
+                <div class="card-body d-flex flex-column justify-content-center py-4 py-md-5">
+                    <h6 class="mb-1">Total Revenue</h6>
+                    <h3 class="mb-0">KES {{ total_revenue }}</h3>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="col-md-3">
-        <div class="card bg-success text-white mb-3">
-            <div class="card-body">
-                <h6>Total Categories</h6>
-                <h3>{{ total_categories }}</h3>
+    <!-- ===================== -->
+    <!-- PERIOD REVENUE CARDS -->
+    <!-- ===================== -->
+    <div class="row text-center g-3 g-md-4 mt-4 mt-md-5">
+        <div class="col-md-4">
+            <div class="card border-success border-2 shadow h-100">
+                <div class="card-body py-4 py-md-5">
+                    <h6 class="text-success mb-2">Today Revenue</h6>
+                    <h4 class="mb-0">KES {{ today_revenue|default:"0" }}</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-primary border-2 shadow h-100">
+                <div class="card-body py-4 py-md-5">
+                    <h6 class="text-primary mb-2">Last 7 Days Revenue</h6>
+                    <h4 class="mb-0">KES {{ weekly_revenue|default:"0" }}</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-warning border-2 shadow h-100">
+                <div class="card-body py-4 py-md-5">
+                    <h6 class="text-warning mb-2">This Month Revenue</h6>
+                    <h4 class="mb-0">KES {{ monthly_revenue|default:"0" }}</h4>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="col-md-3">
-        <div class="card bg-warning text-dark mb-3">
-            <div class="card-body">
-                <h6>Total Sales Qty</h6>
-                <h3>{{ total_sales }}</h3>
+    <hr class="my-4 my-md-5">
+
+    <!-- SALES CHART -->
+    <h4 class="mb-3 mb-md-4 fw-semibold">Sales Overview</h4>
+    <div class="card shadow mb-4 mb-md-5">
+        <div class="card-body p-3 p-md-4">
+            <div style="position: relative; height: 400px; width: 100%;">
+                <canvas id="salesChart"></canvas>
             </div>
         </div>
     </div>
 
-    <div class="col-md-3">
-        <div class="card bg-info text-white mb-3">
-            <div class="card-body">
-                <h6>Total Revenue</h6>
-                <h3>KES {{ total_revenue }}</h3>
+    <!-- CATEGORY DISTRIBUTION -->
+    <h4 class="mb-3 mb-md-4 fw-semibold">Category Distribution</h4>
+    <div class="card shadow mb-4 mb-md-5">
+        <div class="card-body p-4">
+            <div style="position: relative; height: 400px; width: 100%; max-width: 900px; margin: 0 auto;">
+                <canvas id="categoryPieChart"></canvas>
             </div>
         </div>
+    </div>
+
+    <!-- MONTHLY REPORT -->
+    <h4 class="mb-3 mb-md-4 fw-semibold">Monthly Revenue Report</h4>
+    <div class="card shadow">
+        <ul class="list-group list-group-flush">
+            {% for month in monthly_report %}
+                <li class="list-group-item d-flex justify-content-between align-items-center px-3 px-md-4 py-3">
+                    <span>{{ month.month }}</span>
+                    <span class="fw-bold text-success">KES {{ month.total }}</span>
+                </li>
+            {% empty %}
+                <li class="list-group-item text-center text-muted py-5">
+                    No sales recorded yet
+                </li>
+            {% endfor %}
+        </ul>
     </div>
 
 </div>
-
-<!-- ===================== -->
-<!-- PERIOD REVENUE CARDS -->
-<!-- ===================== -->
-<div class="row text-center mt-4">
-
-    <div class="col-md-4">
-        <div class="card border-success mb-3 shadow-sm">
-            <div class="card-body">
-                <h6 class="text-success">Today Revenue</h6>
-                <h4>KES {{ today_revenue }}</h4>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-4">
-        <div class="card border-primary mb-3 shadow-sm">
-            <div class="card-body">
-                <h6 class="text-primary">Last 7 Days Revenue</h6>
-                <h4>KES {{ weekly_revenue }}</h4>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-4">
-        <div class="card border-warning mb-3 shadow-sm">
-            <div class="card-body">
-                <h6 class="text-warning">This Month Revenue</h6>
-                <h4>KES {{ monthly_revenue }}</h4>
-            </div>
-        </div>
-    </div>
-
-</div>
-
-<hr>
-
-<!-- ===================== -->
-<!-- SALES CHART -->
-<!-- ===================== -->
-<h4 class="mb-3">Sales Overview</h4>
-<div class="card p-3 shadow-sm">
-    <canvas id="salesChart"></canvas>
-</div>
-
-<hr>
-
-<hr>
-
-<h4 class="mb-3">Category Distribution</h4>
-
-<div class="card p-3 shadow-sm">
-    <canvas id="categoryPieChart"></canvas>
-</div>
-
-<!-- ===================== -->
-<!-- MONTHLY REPORT -->
-<!-- ===================== -->
-<h4 class="mb-3">Monthly Revenue Report</h4>
-<ul class="list-group shadow-sm">
-    {% for month in monthly_report %}
-        <li class="list-group-item d-flex justify-content-between">
-            {{ month.month }}
-            <span class="fw-bold">KES {{ month.total }}</span>
-        </li>
-    {% empty %}
-        <li class="list-group-item text-center text-muted">
-            No sales recorded yet
-        </li>
-    {% endfor %}
-</ul>
 
 {% endblock %}
