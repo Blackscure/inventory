@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from django.db.models import DecimalField, Sum, F,ExpressionWrapper
+from django.db.models import Count, DecimalField, Sum, F,ExpressionWrapper
 from .models import Product, Category, Sale
 from .forms import ProductForm, CategoryForm, SaleForm, RegisterForm
 from django.db.models.functions import TruncMonth
@@ -96,6 +96,20 @@ def dashboard(request):
             'total': round(item['total'], 2)
         })
 
+    # CATEGORY PIE CHART
+    # -----------------------------
+    category_data = (
+        Category.objects
+        .annotate(product_count=Count('product'))
+    )
+
+    pie_labels = []
+    pie_data = []
+
+    for category in category_data:
+        pie_labels.append(category.name)
+        pie_data.append(category.product_count)
+
     context = {
         'total_products': total_products,
         'total_categories': total_categories,
@@ -109,6 +123,8 @@ def dashboard(request):
         'chart_labels': chart_labels,
         'chart_data': chart_data,
         'monthly_report': monthly_report,
+        'pie_labels': pie_labels,
+        'pie_data': pie_data,
     }
 
     return render(request, 'dashboard.html', context)

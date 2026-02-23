@@ -58,5 +58,21 @@ if(ctx){
 }
 </script>
 
+<script>
+const pieCtx = document.getElementById('categoryPieChart');
+
+if(pieCtx){
+    new Chart(pieCtx, {
+        type: 'pie',
+        data: {
+            labels: {{ pie_labels|safe }},
+            datasets: [{
+                data: {{ pie_data|safe }},
+            }]
+        }
+    });
+}
+</script>
+
 </body>
 </html>
