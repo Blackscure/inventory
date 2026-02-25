@@ -6,6 +6,8 @@ from .forms import ProductForm, CategoryForm, SaleForm, RegisterForm
 from django.db.models.functions import TruncMonth
 from django.utils import timezone
 from datetime import timedelta
+from .decorators import admin_only, staff_or_admin_only
+
 
 
 def register(request):
@@ -14,15 +16,20 @@ def register(request):
         form.save()
         return redirect('login')
     return render(request, 'register.html', {'form': form})
-
+@login_required
+@staff_or_admin_only
 def category_list(request):
     categories = Category.objects.all()
     return render(request, 'category_list.html', {'categories': categories})
 
+@login_required
+@staff_or_admin_only
 def product_list(request):
     products = Product.objects.select_related('category').all()
     return render(request, 'product_list.html', {'products': products})
 
+@login_required
+@staff_or_admin_only
 def sale_list(request):
     sales = Sale.objects.select_related('product').all()
 
@@ -31,6 +38,8 @@ def sale_list(request):
 
     return render(request, 'sale_list.html', {'sales': sales})
 
+@login_required
+@staff_or_admin_only
 def add_sale(request):
     if request.method == 'POST':
         form = SaleForm(request.POST)
@@ -41,6 +50,8 @@ def add_sale(request):
         form = SaleForm()
     return render(request, 'sale_form.html', {'form': form, 'title': 'Record Sale'})
 
+@login_required
+@staff_or_admin_only
 def edit_sale(request, pk):
     sale = get_object_or_404(Sale, pk=pk)
     if request.method == 'POST':
@@ -52,6 +63,8 @@ def edit_sale(request, pk):
         form = SaleForm(instance=sale)
     return render(request, 'sale_form.html', {'form': form, 'title': 'Edit Sale'})
 
+@login_required
+@admin_only
 def delete_sale(request, pk):
     sale = get_object_or_404(Sale, pk=pk)
     if request.method == 'POST':
@@ -59,6 +72,8 @@ def delete_sale(request, pk):
         return redirect('sale_list')
     return render(request, 'sale_confirm_delete.html', {'sale': sale})
 
+@login_required
+@staff_or_admin_only
 def add_category(request):
     if request.method == 'POST':
         form = CategoryForm(request.POST)
@@ -70,6 +85,8 @@ def add_category(request):
     return render(request, 'category_form.html', {'form': form, 'title': 'Add Category'})
 
 
+@login_required
+@staff_or_admin_only
 def edit_category(request, pk):
     category = get_object_or_404(Category, pk=pk)
     if request.method == 'POST':
@@ -82,6 +99,8 @@ def edit_category(request, pk):
     return render(request, 'category_form.html', {'form': form, 'title': 'Edit Category'})
 
 
+@login_required
+@staff_or_admin_only
 def add_product(request):
     if request.method == 'POST':
         form = ProductForm(request.POST)
@@ -92,6 +111,8 @@ def add_product(request):
         form = ProductForm()
     return render(request, 'product_form.html', {'form': form, 'title': 'Add Product'})
 
+@login_required
+@staff_or_admin_only
 def edit_product(request, pk):
     product = get_object_or_404(Product, pk=pk)
     if request.method == 'POST':
@@ -103,14 +124,16 @@ def edit_product(request, pk):
         form = ProductForm(instance=product)
     return render(request, 'product_form.html', {'form': form, 'title': 'Edit Product'})
 
+@login_required
+@admin_only
 def delete_product(request, pk):
     product = get_object_or_404(Product, pk=pk)
     if request.method == 'POST':
         product.delete()
         return redirect('product_list')
     return render(request, 'product_confirm_delete.html', {'product': product})
-
-
+@login_required
+@admin_only
 def delete_category(request, pk):
     category = get_object_or_404(Category, pk=pk)
     if request.method == 'POST':
@@ -120,6 +143,7 @@ def delete_category(request, pk):
 
 
 @login_required
+@staff_or_admin_only
 def dashboard(request):
 
     total_products = Product.objects.count()

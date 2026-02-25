@@ -31,7 +31,10 @@
                         <td>{{ sale.sale_date|date:"d M Y H:i" }}</td>
                         <td>
                             <a href="{% url 'edit_sale' sale.id %}" class="btn btn-sm btn-warning">Edit</a>
-                            <a href="{% url 'delete_sale' sale.id %}" class="btn btn-sm btn-danger">Delete</a>
+                            
+                            {% if user.is_authenticated and user.profile and user.profile.role == 'admin'%}
+                                <a href="{% url 'delete_sale' sale.id %}" class="btn btn-sm btn-danger">Delete</a>
+                            {% endif %}
                         </td>
                     </tr>
                     {% empty %}

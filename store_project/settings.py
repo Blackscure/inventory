@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'store',
+    'authentication.apps.AuthenticationConfig',
 ]
 
 MIDDLEWARE = [
@@ -40,6 +41,7 @@ MIDDLEWARE = [
 
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'login'
+
 
 ROOT_URLCONF = 'store_project.urls'
 
