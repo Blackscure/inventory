@@ -1,12 +1,16 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, DecimalField, Sum, F,ExpressionWrapper
+
+from .filters import CategoryFilter
+
 from .models import Product, Category, Sale
 from .forms import ProductForm, CategoryForm, SaleForm, RegisterForm
 from django.db.models.functions import TruncMonth
 from django.utils import timezone
 from datetime import timedelta
 from .decorators import admin_only, staff_or_admin_only
+from django.core.paginator import Paginator
 
 
 
@@ -19,8 +23,18 @@ def register(request):
 @login_required
 @staff_or_admin_only
 def category_list(request):
-    categories = Category.objects.all()
-    return render(request, 'category_list.html', {'categories': categories})
+    filterset = CategoryFilter(request.GET, queryset=Category.objects.all())
+    paginator = Paginator(filterset.qs.order_by('name'), per_page=5)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'page_obj': page_obj,
+        'filter_form': filterset.form,
+        'is_paginated': page_obj.has_other_pages(),
+        'filter': filterset,
+    }
+    return render(request, 'category_list.html', context)
 
 @login_required
 @staff_or_admin_only

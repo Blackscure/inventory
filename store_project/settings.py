@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'authentication.apps.AuthenticationConfig',
     'crispy_forms',
     'crispy_bootstrap5',
+    'django_filters',
     # 'bootstrap5',
 ]
 

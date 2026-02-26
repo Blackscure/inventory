@@ -1,15 +1,33 @@
 {% extends 'base.html' %}
 
+{% load crispy_forms_tags %}
+
 {% block content %}
 <div class="container-fluid">
-    <h3>{{ title }}</h3>
-    <div class="card shadow-sm p-3 mb-3">
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button class="btn btn-success">Save</button>
-            <a href="{% url 'product_list' %}" class="btn btn-secondary">Cancel</a>
-        </form>
+    <div class="row justify-content-center">
+        <div class="col-xl-6 col-lg-8 col-md-10">
+            <h3 class="mb-4">{{ title }}</h3>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4 p-md-5">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Crispy renders the form beautifully with Bootstrap 5 classes -->
+                        {{ form|crispy }}
+
+                        <div class="d-flex flex-wrap gap-3 mt-4">
+                            <button type="submit" class="btn btn-dark px-5">
+                                Save
+                            </button>
+                            <a href="{% url 'product_list' %}" class="btn btn-outline-secondary px-5">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
